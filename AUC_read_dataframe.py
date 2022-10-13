@@ -102,21 +102,20 @@ if __name__ == "__main__":
 
         ds = load_dataset(args1, is_conc)
         total_CV_idx = utils_train.pick_cv_index(stage_key=hyper_dict['stage'])
-        # fold_history = utils_train.cross_validation2(utils_train.train_AUC, ds, total_CV_idx, args1)
-        # ave_performance = utils.print_final_performance(fold_history)
-        # utils_train.save_AUC_history(fold_history, args1)
+        fold_history = utils_train.cross_validation2(utils_train.train_AUC, ds, total_CV_idx, args1)
+        ave_performance = utils.print_final_performance(fold_history)
+        utils_train.save_AUC_history(fold_history, args1)
 
-        fold_history = utils_train.load_fold_history(args1.AUC_path + '/fold_history_ROC_{}.npy'.format(args1.code))
+        # fold_history = utils_train.load_fold_history(args1.AUC_path + '/fold_history_ROC_{}.npy'.format(args1.code))
 
         AUC = utils_train.find_AUC(fold_history)
-        # model_ok = utils_train.check_model_loading(AUC, args1, ds, total_CV_idx)
+        model_ok = utils_train.check_model_loading(AUC, args1, ds, total_CV_idx)
         val_AUC = utils_train.check_val_AUC(args1, ds, total_CV_idx)
 
-        model_ok = True
         if model_ok:
-            # df = utils_train.update_df2(df, i, ave_performance)
-            # df = utils_train.update_df_any(df, i, Test_AUC=AUC, Droppout_rate=hyper_dict['dpr'],
-            #                                Num_of_epochs=hyper_dict['n_epoch'], Exp_id=hyper_dict['exp_id'])
+            df = utils_train.update_df2(df, i, ave_performance)
+            df = utils_train.update_df_any(df, i, Test_AUC=AUC, Droppout_rate=hyper_dict['dpr'],
+                                           Num_of_epochs=hyper_dict['n_epoch'], Exp_id=hyper_dict['exp_id'])
             df = utils_train.update_df_any(df, i, Validation_AUC=val_AUC)
             print(df.loc[i, :])
             df.to_pickle('Results_dataframe/Full_with_AUC_test_5.pkl')
